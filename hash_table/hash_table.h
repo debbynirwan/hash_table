@@ -34,8 +34,10 @@ public:
     void Insert(const Key& key, const Value& value);
     void Remove(const Key& key);
     std::size_t Size() const;
-    void SetLoadFactor(double loadFactor);
+    void SetMaxLoadFactor(double loadFactor);
+    double MaxLoadFactor() const;
     inline std::size_t BucketCount() const;
+    void Reserve(const std::size_t n);
 
 private:
     Node* PrepareInsertion(const Key& key);
@@ -44,7 +46,7 @@ private:
     void Rehash(const std::size_t n);
 
     std::vector<Node*> m_table;
-    double m_loadFactor;
+    double m_maxLoadFactor;
     std::hash<Key> m_hashFunc;
     std::size_t m_size;
     static constexpr double DEFAULT_LOAD_FACTOR = 0.75d;

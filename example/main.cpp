@@ -49,6 +49,9 @@ int main(int argc, char** argv)
         }
     }
 
+    uTable.reserve(static_cast<double>(j / uTable.max_load_factor()) + 1);
+    table.Reserve(static_cast<double>(j / table.MaxLoadFactor()) + 1);
+
     start = clock();
     for (int i = 0; i < j; i++) {
         uTable.insert({ i, i * 5 });

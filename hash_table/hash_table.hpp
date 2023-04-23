@@ -21,7 +21,7 @@
 template <class Key, class Value>
 HashTable<Key, Value>::HashTable()
     : m_table()
-    , m_loadFactor(DEFAULT_LOAD_FACTOR)
+    , m_maxLoadFactor(DEFAULT_LOAD_FACTOR)
     , m_hashFunc()
     , m_size(0)
 {
@@ -113,12 +113,23 @@ template <class Key, class Value> void HashTable<Key, Value>::Remove(const Key& 
     }
 }
 
+template <class Key, class Value> void HashTable<Key, Value>::Reserve(const std::size_t n)
+{
+    std::size_t size = (n <= 0) ? 1 : n;
+    Rehash(size);
+}
+
 template <class Key, class Value> std::size_t HashTable<Key, Value>::Size() const { return m_size; }
 
-template <class Key, class Value> void HashTable<Key, Value>::SetLoadFactor(double loadFactor)
+template <class Key, class Value> double HashTable<Key, Value>::MaxLoadFactor() const
+{
+    return m_maxLoadFactor;
+}
+
+template <class Key, class Value> void HashTable<Key, Value>::SetMaxLoadFactor(double loadFactor)
 {
     if (loadFactor > 0)
-        m_loadFactor = loadFactor;
+        m_maxLoadFactor = loadFactor;
 }
 
 template <class Key, class Value>
@@ -136,8 +147,8 @@ typename HashTable<Key, Value>::Node* HashTable<Key, Value>::PrepareInsertion(co
         }
     }
 
-    if (m_size + 1 > BucketCount() * m_loadFactor || BucketCount() == 0) {
-        std::size_t size = (BucketCount() == 0) ? 1 : 2 * (m_size + 1) / m_loadFactor;
+    if (m_size + 1 > BucketCount() * m_maxLoadFactor || BucketCount() == 0) {
+        std::size_t size = (BucketCount() == 0) ? 1 : 2 * (m_size + 1) / m_maxLoadFactor;
         Rehash(size);
     }
 
