@@ -29,7 +29,7 @@ table.Remove(1);
 see [example](example/main.cpp) for more.
 
 # Documentation
-If you're interested in understanding the details you can read my blog post [here]().
+If you're interested in understanding the details you can read my blog post [here](https://medium.com/@debby-nirwan/how-to-implement-hash-tables-in-c-e9ee0e320c53).
 
 # Issues
 Please report issues if you found bugs or raise a Pull Request.
