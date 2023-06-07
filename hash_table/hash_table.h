@@ -28,6 +28,10 @@ template <class Key, class Value> class HashTable {
 
 public:
     HashTable();
+    HashTable(const HashTable& other);
+    HashTable& operator=(const HashTable& other);
+    HashTable(HashTable&& other);
+    HashTable& operator=(HashTable&& other);
     ~HashTable();
 
     Value At(const Key& key);
@@ -44,6 +48,8 @@ private:
     std::size_t HashCodeToIndex(const std::size_t hash_code, const std::size_t bucket_count);
     static bool PowerOfTwo(const std::size_t num);
     void Rehash(const std::size_t n);
+    void ClearAll();
+    void CopyTable(const HashTable& other);
 
     std::vector<Node*> m_table;
     double m_maxLoadFactor;

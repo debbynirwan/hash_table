@@ -17,6 +17,7 @@
 
 #include "hash_table.h"
 #include <stdexcept>
+#include <utility>
 
 template <class Key, class Value>
 HashTable<Key, Value>::HashTable()
@@ -27,19 +28,52 @@ HashTable<Key, Value>::HashTable()
 {
 }
 
-template <class Key, class Value> HashTable<Key, Value>::~HashTable()
+template <class Key, class Value>
+HashTable<Key, Value>::HashTable(const HashTable& other)
+    : m_table()
+    , m_maxLoadFactor(other.m_maxLoadFactor)
+    , m_hashFunc()
+    , m_size(0)
 {
-    for (int i = 0; i < m_table.size(); i++) {
-        Node* current_node = m_table[i];
-        Node* tmp_node = nullptr;
-
-        while (current_node != nullptr) {
-            tmp_node = current_node;
-            current_node = current_node->next;
-            delete tmp_node;
-        }
-    }
+    CopyTable(other);
 }
+
+template <class Key, class Value>
+HashTable<Key, Value>& HashTable<Key, Value>::operator=(const HashTable& other)
+{
+    if (this != &other) {
+        ClearAll();
+        m_maxLoadFactor = other.m_maxLoadFactor;
+        CopyTable(other);
+    }
+
+    return *this;
+}
+
+template <class Key, class Value>
+HashTable<Key, Value>::HashTable(HashTable&& other)
+    : m_table()
+    , m_maxLoadFactor(other.m_maxLoadFactor)
+    , m_hashFunc()
+    , m_size(other.m_size)
+{
+    m_table = std::move(other.m_table);
+}
+
+template <class Key, class Value>
+HashTable<Key, Value>& HashTable<Key, Value>::operator=(HashTable&& other)
+{
+    if (this != &other) {
+        ClearAll();
+        m_maxLoadFactor = other.m_maxLoadFactor;
+        m_size = other.m_size;
+        m_table = std::move(other.m_table);
+    }
+
+    return *this;
+}
+
+template <class Key, class Value> HashTable<Key, Value>::~HashTable() { ClearAll(); }
 
 template <class Key, class Value> Value HashTable<Key, Value>::At(const Key& key)
 {
@@ -202,4 +236,35 @@ template <class Key, class Value> void HashTable<Key, Value>::Rehash(const std::
     }
 
     m_table = newTable;
+}
+
+template <class Key, class Value> void HashTable<Key, Value>::ClearAll()
+{
+    for (int i = 0; i < m_table.size(); i++) {
+        Node* current_node = m_table[i];
+        Node* tmp_node = nullptr;
+
+        while (current_node != nullptr) {
+            tmp_node = current_node;
+            current_node = current_node->next;
+            delete tmp_node;
+        }
+    }
+
+    m_size = 0;
+    m_maxLoadFactor = DEFAULT_LOAD_FACTOR;
+}
+
+template <class Key, class Value> void HashTable<Key, Value>::CopyTable(const HashTable& other)
+{
+    if (other.m_table.size() != 0) {
+        Reserve(other.m_table.size());
+        for (int i = 0; i < other.BucketCount(); i++) {
+            Node* current_node = m_table[i];
+            while (current_node != nullptr) {
+                Insert(current_node->key, current_node->value);
+                current_node = current_node->next;
+            }
+        }
+    }
 }
